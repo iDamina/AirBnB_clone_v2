@@ -61,5 +61,4 @@ class FileStorage:
         if obj is not None:
             key = "{}.{}".format(obj.__class__.__name__, str(obj.id))
             if key in self.all():
-                self.all().pop(key)
-                self.save()
+                del self.__objects[key]

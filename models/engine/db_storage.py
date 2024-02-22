@@ -23,10 +23,7 @@ class DBStorage:
         self.__engine = create_engine(f"mysql+mysqldb://{user}:{passwd}@{host}/{db}",
                                       pool_pre_ping=True)
         if env == 'test':
-            self.drop_table()
-
-    def drop_table(self):
-        Base.metadata.drop_all(self.__engine)
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """query on the current database session (self.__session)

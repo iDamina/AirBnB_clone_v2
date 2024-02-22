@@ -2,7 +2,6 @@
 """
 models/engine/db_storage.py
 """
-import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 import os
@@ -61,7 +60,6 @@ class DBStorage:
         from models.city import City
         from models.amenity import Amenity
         from models.review import Review
-        from models.base_model import Base
         Base.metadata.create_all(self.__engine)
         session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(session)

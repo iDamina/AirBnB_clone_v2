@@ -4,20 +4,22 @@ models/engine/db_storage.py
 """
 import sqlalchemy
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 import os
+from models.base_model import Base
 
 
 class DBStorage:
     """Handles application data persistence"""
-    user = os.environ.get('HBNB_MYSQL_USER')
-    passwd = os.environ.get('HBNB_MYSQL_PWD')
-    host = os.environ.get('HBNB_MYSQL_HOST')
-    db = os.environ.get('HBNB_MYSQL_DB')
-    env = os.environ.get('HBNB_ENV')
     __engine = None
     __session = None
 
     def __init__(self):
+        user = os.environ.get('HBNB_MYSQL_USER')
+        passwd = os.environ.get('HBNB_MYSQL_PWD')
+        host = os.environ.get('HBNB_MYSQL_HOST')
+        db = os.environ.get('HBNB_MYSQL_DB')
+        env = os.environ.get('HBNB_ENV')
         self.__engine = create_engine(f"mysql+mysqldb://{user}:{passwd}@{host}/{db}",
                                       pool_pre_ping=True)
         if env == 'test':
@@ -62,6 +64,7 @@ class DBStorage:
         from models.city import City
         from models.amenity import Amenity
         from models.review import Review
+        from models.base_model import Base
         Base.metadata.create_all(self.__engine)
         session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(session)

@@ -16,6 +16,7 @@ place_amenity = Table(
             ForeignKey('amenities.id'),
             nullable=False, primary_key=True))
 
+
 class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = 'places'
@@ -33,7 +34,7 @@ class Place(BaseModel, Base):
     reviews = relationship(
             'Review', backref='place', cascade="all, delete-orphan")
     amenities = relationship(
-            'Amenity', secondary=place_amenity, back_populates='places'
+            'Amenity', secondary=place_amenity, back_populates='places',
             viewonly=False)
 
     @property

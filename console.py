@@ -120,7 +120,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        arg_list = shlex.split(args)
+        arg_list = args.split(' ')
         args_name = arg_list[0]
 
         if args_name not in HBNBCommand.classes:
@@ -128,29 +128,26 @@ class HBNBCommand(cmd.Cmd):
             return
 
         new_instance = HBNBCommand.classes[args_name]()
-        instance_obj = new_instance.__dict__
-        param_dict = {}
-        for param in arg_list[1:]:
-            key_value = param.split('=')
-            if len(key_value) == 2:
-                key, value = key_value
-               # Handling string values with double quotes
-                if value.startswith("\"") and value.endswith("\""):
-                    value = value.replace('_', ' ') #.replace('\\"', '"')
-                    #print(value)
-                # Handling float values with a dot
-                elif '.' in value and value.replace('.', '', 1).isdigit():
-                    value = float(value)
-                #Handling integer values
-                elif value.isdigit():
-                    value = int(value)
-                else:
-                    #print("Invalid format")
-                    value = value.replace('_', ' ')
-                param_dict[key] = value
-
-                instance_obj[key] = value
+        kwargs = {}
+        for item in arg_list[1:]:
+            key = item[:item.find('=')]
+            if item.find('="') == -1 and item.find('.') == -1:
+                value = item[item.find('=') + 1:]
+            elif item.find('="') and item.find('.') == -1:
+                value = item[item.find('"') + 1:-1].replace('_', ' ')
+                value = str(value.replace('"', '\\"'))
+                value = '"' + value + '"'
+            elif item.find('.'):
+                value = item[item.find('=') + 1:]
+            else:
+                return
+            kwargs[key] = value
+        for k, v in kwargs.items():
+            setattr(new_instance, k, eval(v))
         new_instance.save()
+        print(new_instance.id)
+        storage.save()
+
 
     def help_create(self):
         """ Help information for the create method """
@@ -181,7 +178,7 @@ class HBNBCommand(cmd.Cmd):
 
         key = c_name + "." + c_id
         try:
-            print(storage._FileStorage__objects[key])
+            print(storage.all()[key])
         except KeyError:
             print("** no instance found **")
 
@@ -232,11 +229,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all(HBNBCommand.classes[args]).items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
         print(print_list)

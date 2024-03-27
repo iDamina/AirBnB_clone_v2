@@ -2,7 +2,6 @@
 """
 models/engine/db_storage.py
 """
-import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 import os
@@ -23,10 +22,7 @@ class DBStorage:
         self.__engine = create_engine(f"mysql+mysqldb://{user}:{passwd}@{host}/{db}",
                                       pool_pre_ping=True)
         if env == 'test':
-            self.drop_table()
-
-    def drop_table(self):
-        Base.metadata.drop_all(self.__engine)
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """query on the current database session (self.__session)
@@ -64,7 +60,6 @@ class DBStorage:
         from models.city import City
         from models.amenity import Amenity
         from models.review import Review
-        from models.base_model import Base
         Base.metadata.create_all(self.__engine)
         session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(session)
